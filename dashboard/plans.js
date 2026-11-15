@@ -133,6 +133,77 @@
     return 'Deposit $' + capital + ' of USDC into ' + name + ' on ' + chain + ' and use its flagship feature once.';
   }
 
+  /** The weekly action, in the words of the category: staying active means doing what the
+   *  protocol itself does, not a generic deposit. Every branch names the action the protocol's
+   *  own records would count. */
+  function weeklyActionFor(p) {
+    var c = (p.category || '').toLowerCase();
+    if (c.indexOf('curator') !== -1 || c.indexOf('allocator') !== -1) {
+      return 'Each week, add a small deposit to a vault or move a little between its vaults, so the wallet shows repeated vault activity.';
+    }
+    if (c.indexOf('basis') !== -1) {
+      return 'Each week, check the basis vault and add a small amount, so the wallet shows repeated vault activity.';
+    }
+    if (c.indexOf('prediction') !== -1) {
+      return 'Each week, place one small market position and settle it, so the wallet shows repeated market activity.';
+    }
+    if (c.indexOf('rwa') !== -1) {
+      return 'Each week, check the yield that has accrued and add a small amount to the position, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('cdp manager') !== -1) {
+      return 'Each week, check the vault\u2019s health and adjust the collateral a little, so the wallet shows repeated vault activity.';
+    }
+    if (c.indexOf('lending') !== -1 || c.indexOf('cdp') !== -1 || c.indexOf('collateral') !== -1 || c.indexOf('uncollateralized') !== -1) {
+      return 'Each week, top up the supply a little or adjust the borrow, so the wallet shows repeated lending activity.';
+    }
+    if (c.indexOf('dex') !== -1) {
+      return 'Each week, swap a small amount through the main pool or add a little liquidity, so the wallet shows repeated trading activity.';
+    }
+    if (c.indexOf('yield aggregator') !== -1 || c.indexOf('yield') !== -1 || c.indexOf('leveraged farm') !== -1 || c.indexOf('farm') !== -1) {
+      return 'Each week, add a small amount to the vault or harvest and re-deposit the yield, so the wallet shows repeated vault activity.';
+    }
+    if (c.indexOf('restak') !== -1 || c.indexOf('staking') !== -1) {
+      return 'Each week, check the staking rewards and add a small amount, so the wallet shows repeated staking activity.';
+    }
+    if (c.indexOf('derivative') !== -1 || c.indexOf('perpetual') !== -1) {
+      return 'Each week, open and close one small hedged trade, so the wallet shows repeated trading activity.';
+    }
+    if (c.indexOf('insurance') !== -1) {
+      return 'Each week, check the cover\u2019s terms and add a small amount, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('index') !== -1) {
+      return 'Each week, add a small amount to the index basket, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('payment') !== -1 || c.indexOf('card') !== -1) {
+      return 'Each week, make one small real payment through the rail, so the wallet shows repeated payment activity.';
+    }
+    if (c.indexOf('stable') !== -1) {
+      return 'Each week, add a small amount to the stable position, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('chain') !== -1) {
+      return 'Each week, use one app on the chain, so the wallet shows repeated on-chain activity.';
+    }
+    if (c.indexOf('governance') !== -1) {
+      return 'Each week, check for a new proposal and vote when one is open, so the wallet shows repeated governance activity.';
+    }
+    if (c.indexOf('anchor btc') !== -1 || c.indexOf('decentralized btc') !== -1) {
+      return 'Each week, add a small amount to the BTC-backed position, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('otc') !== -1) {
+      return 'Each week, complete one small trade, so the wallet shows repeated trading activity.';
+    }
+    if (c.indexOf('cedefi') !== -1) {
+      return 'Each week, add a small amount to the vault, so the wallet shows repeated vault activity.';
+    }
+    if (c.indexOf('liquidity manager') !== -1) {
+      return 'Each week, check the managed position\u2019s range and add a small amount, so the wallet shows repeated activity.';
+    }
+    if (c.indexOf('interest rate') !== -1) {
+      return 'Each week, check the rate position and adjust it a little, so the wallet shows repeated activity.';
+    }
+    return 'Do one qualifying action each week — a deposit, a borrow, a swap or a vote — so the wallet stays active in the protocol\u2019s own records.';
+  }
+
   /** A protocol's farm plan: six steps, each an action with a cost and a time. */
   function farmSteps(p, age) {
     var chain = chainOf(p);
@@ -152,7 +223,7 @@
         time: '15 minutes to set up',
       },
       {
-        text: 'Do one qualifying action each week — a deposit, a borrow, a swap or a vote — so the wallet stays active in the protocol\u2019s own records.',
+        text: weeklyActionFor(p),
         cost: gas + ' of gas a week',
         time: '10 minutes a week',
       },
