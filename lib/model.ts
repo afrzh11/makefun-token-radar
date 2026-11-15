@@ -193,6 +193,12 @@ function median(values: number[]): number {
  * The peer-multiple table: for each category, the median market-cap/TVL of its token-bearing
  * protocols when at least `minPeers` of them exist; otherwise the median over every token-bearing
  * protocol. Every multiple is clamped to [low, high] so one frothy category cannot set the board.
+ *
+ * The bar is not blended away: a lone peer can be an outlier by orders of magnitude (one
+ * prediction-market peer's market cap is 400x its TVL; one risk-curator peer's is 3x), and
+ * blending it in would let a single unrepresentative token set its whole category — Polymarket
+ * would jump to ~$915M and top the board on one peer's ratio. The global median is the honest
+ * fallback, and the dashboard says so wherever a row uses it.
  */
 export function peerTable(
   protocols: SnapshotProtocol[],
@@ -249,8 +255,15 @@ const EXCHANGE = /^(Binance|Coinbase|Bybit|Kraken|Bitget|OKX|Bitfinex|Gemini)\b/
  */
 const WRAPPED = /\b(wrapped|staked|staking|restaking|restaked)\b/i;
 
-/** The categories the watchlist's rule excludes: bridges, liquid staking and exchanges. */
-const EXCLUDED_CATEGORIES = new Set(['Bridge', 'Canonical Bridge', 'Liquid Staking', 'Liquid Restaking', 'Restaked BTC', 'CEX']);
+/**
+ * The categories the watchlist's rule excludes: bridges, liquid staking and exchanges.
+ * 'Cross Chain Bridge' is DefiLlama's other bridge category: a bridge product by name, and the
+ * house's watchlist keeps Circle Gateway (Circle's bridge product) out of it — via the parent
+ * protocol, a field the snapshot does not carry — so the category, not the name, is excluded.
+ * Without this, one bridge product would rank #14 and its farm plan would be "bridge USDC",
+ * which is not farming a token launch.
+ */
+const EXCLUDED_CATEGORIES = new Set(['Bridge', 'Canonical Bridge', 'Cross Chain Bridge', 'Liquid Staking', 'Liquid Restaking', 'Restaked BTC', 'CEX']);
 
 /** Whether a protocol records no token at all. */
 export function isPreToken(p: SnapshotProtocol): boolean {
