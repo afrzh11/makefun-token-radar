@@ -42,12 +42,18 @@ implied = TVL × peer multiple × growth multiplier × maturity multiplier
 - **Peer multiple.** The median market-cap/TVL of the token-bearing protocols in the same
   category (at least 3 peers; otherwise the median over every token-bearing protocol), clamped to
   0.05–2.50. A protocol is worth what its category's traded peers are worth per dollar of TVL.
+  The 3-peer bar is deliberate: a lone peer can be an outlier by orders of magnitude — one
+  category's only traded peer is worth 400× its TVL — and letting it set its whole category
+  would put that category's protocols at the top on one unrepresentative ratio.
 - **Growth multiplier.** `1 + clamp(change_7d, −50, +100) / 100 × 0.5`.
 - **Maturity multiplier.** `0.70 + min(age_days, 1095) / 1095 × 0.45`; unknown age counts as 365 days.
 - **Coverage.** The board covers all 40 watchlist slugs, then every other protocol that passes the
   same exclusion rule the watchlist uses — no bridge, liquid-staking or exchange product, no
   versioned pool, no exchange's name, no wrapped/staked word in its name — whatever its TVL.
-  On the 2026-11-14 snapshot that is 197 rows, with a total implied value of about $4.2B.
+  On the 2026-11-14 snapshot that is 196 rows, with a total implied value of about $4.14B.
+  (One bridge product, Circle Gateway, ranked #14 on the first pass; it is Circle's bridge,
+  which the watchlist itself keeps out, so the exclusion rule now names DefiLlama's
+  'Cross Chain Bridge' category as well.)
 
 No protocol name is ever special-cased. The dashboard shows the four factors for every row so a
 reader can check the arithmetic. An implied value is this radar's own claim, not a price and not a
