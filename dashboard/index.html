@@ -134,7 +134,10 @@
         in the same category, when at least 3 peers exist; otherwise the median over every
         token-bearing protocol (this snapshot: <span id="model-global">—</span>). Clamped to
         0.05–2.50, so one frothy category cannot set the board. A protocol is worth what its
-        category&rsquo;s traded peers are worth per dollar of TVL.</li>
+        category&rsquo;s traded peers are worth per dollar of TVL. The 3-peer bar is deliberate:
+        a lone peer can be an outlier by orders of magnitude — one category&rsquo;s only traded
+        peer is worth 400&times; its TVL — and letting it set its whole category would put that
+        category&rsquo;s protocols at the top on one unrepresentative ratio.</li>
         <li><strong>Growth multiplier.</strong> 1 + (7-day TVL change, clamped to −50%…+100%) &divide; 100
         &times; 0.5. A protocol growing fast is worth more than one shrinking at the same size.</li>
         <li><strong>Maturity multiplier.</strong> 0.70 + min(age in days, 1095) &divide; 1095 &times; 0.45.
