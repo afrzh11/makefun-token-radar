@@ -97,3 +97,82 @@ so fragment navigation works live.
    deadline is the final entry.
 4. If the snapshot ever changes (it is sealed, so it should not), re-run `main.ts` and re-verify;
    the build is deterministic, so a re-run reproduces `out/` byte-for-byte.
+
+## Maximization pass (2026-11-15, after the first submission)
+
+A pairwise-judge audit of the submitted entry found three real weaknesses and fixed them.
+The entry was already submitted (submission 01a1de6c-8574-750e-b6a8-1a0fe2c0fec7); this pass
+is for a resubmission. Nothing here was pushed or submitted by this pass.
+
+### 1. A bridge product ranked #14 — excluded
+
+Circle Gateway (Cross Chain Bridge, TVL $65M, implied $57.6M) was #14. It is Circle's bridge
+product: the house's watchlist keeps it out via `parentProtocol`, a field the snapshot does
+not carry, and its farm plan was "bridge $100 of USDC" — not farming a token launch. The fix
+is by category, not by name: `EXCLUDED_CATEGORIES` in `lib/model.ts` now also lists
+'Cross Chain Bridge' (DefiLlama's other bridge category), with a comment saying why. Board
+197 → 196 rows, 157 → 156 early, total implied $4,194,289,231 → $4,136,652,034 (the $57.6M
+difference is exactly Circle Gateway's implied value). Top 5 unchanged. Watchlist still 40/40.
+By contrast, 'Stablecoin Wrapper' rows (Saturn #32, USDCx #63) and 'Chain' rows stay: the
+house kept them on the watchlist, so they are not the same case.
+
+### 2. Farm-plan step 3 was one generic sentence on all 197 rows — now category-specific
+
+Of 1,182 farm steps only 218 were unique; step 3 was identical on every row ("Do one
+qualifying action each week — a deposit, a borrow, a swap or a vote"). `dashboard/plans.js`
+now has `weeklyActionFor(p)`, a 20-branch function in the words of each category (curators
+add to a vault, prediction markets place a position, lending tops up a supply, DEXs swap
+through the main pool, and so on). Step-3 distinct texts: 6 → 47. The same file still feeds
+both `board.json` and the page, so no drift. Steps 1, 2, 4, 5, 6 are unchanged (step 2 was
+already per-protocol; step 5 is one identical safety warning by design).
+
+### 3. Dashboard readability
+
+- Board rows truncate their chain list to the first 3 chains + "+N more" (`chainShort` in
+  `app.js`); the detail view still lists every chain. Steakhouse Financial's sub-line went
+  from two wrapped lines to one.
+- The detail dialog is tighter (padding 24→16px vertical, section margins 24→16px, step gap
+  12→8px): the detail screenshot now shows the working plus farm steps 1–5 at 1440×900,
+  where before step 5 was cut off.
+- The dashboard's model section and `model.ts` now state why the 3-peer bar exists: a lone
+  peer can be an outlier by orders of magnitude (one category's only traded peer is worth
+  400× its TVL), and blending it in would let one unrepresentative token set its whole
+  category. README says the same.
+
+### What was re-checked after these changes
+
+- `main.ts` run twice (out/ vs out2/): `diff -r` identical — determinism kept.
+- Board gates: 196 rows, ranks 1..196, implied value strictly non-increasing, watchlist
+  40/40, 6 farm steps per row, every step 20–600 chars, every slug in the snapshot.
+- `data.js` recomputation reproduces every board value (≤ $1 strict-order adjustment).
+- Dashboard: 4 files, 45,990 bytes (judge reads ≤ 64 KB), no network requests.
+- Dossier: rebuilt with `buildDossier` from `vendor/makefun-board.ts` — byte-for-byte the
+  same as the one `main.ts` wrote (739,355 bytes, under the 1.5 MiB cap).
+- Screenshots re-taken at 1440×900, JPEG quality 92, via the recreated CDP driver
+  (`/tmp/shot.mjs` — the original was lost when /tmp was cleaned; this one also needs
+  `--hatch-webgl-allowed-domains-sha256=` and `Emulation.setDeviceMetricsOverride` for a
+  true 900px viewport). 01-board.jpg 163,490 bytes (196 rows render), 02-detail.jpg
+  203,355 bytes (dialog open, steps 1–5 visible), 03-filtered.jpg 151,558 bytes (Dexs,
+  21 rows). Viewed: all three are legible.
+
+### Considered and rejected
+
+- **Shrinkage blending of the peer multiple** (category median blended toward the global by
+  n/(n+k)): would let single-peer outliers set whole categories. Prediction Market's only
+  peer "rain" has mcap/TVL = 400.2045 — blended (k=3) peer 100.2, clamped to 2.5, sending
+  Polymarket's implied value ~11.7× to ~$915M and #1; Risk Curators' only peer api3 (2.9747)
+  would give blended 0.9040 and quadruple the top 3 to ~$2.2B; Chain's only peer
+  astar-dapps-staking (3.0264) would give 0.9170. The current 3-peer bar + global fallback is
+  what protects the board from these outliers. Medians with ≥3 peers are robust (Lending
+  0.1324 despite 18.96 and 5.13 outliers; Dexs 0.3424 from 11 peers).
+- **Removing USDD (#5, $167.0M)** because it has a token in reality: the snapshot records
+  none for it, and the rules say to follow the snapshot's record; hardcoding it out would
+  violate "not from a hardcoded list of names". Left in.
+- **Removing 'Stablecoin Wrapper' / 'Chain' rows**: both are on the watchlist — the house
+  kept them. Left in.
+- **Higher JPEG quality (98) for the screenshots**: the dark UI compresses well at quality
+  92 (141–203 KB); 98 would only inflate the dossier toward the tie-break without visible
+  gain. Kept 92.
+- **Wider board changes** (sorting the peer table, a compact lede to show more rows): the
+  peer table is already sorted by multiple; shrinking the lede would change the page's look
+  for one extra row. Not done.
