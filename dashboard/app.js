@@ -50,6 +50,14 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
+  /** Chains in a board row: the first three, then how many more — a protocol on eleven chains
+   *  should not need two lines of them. The detail view still lists every chain. */
+  function chainShort(chains) {
+    var list = chains || [];
+    if (list.length <= 3) return list.join(', ') || '—';
+    return list.slice(0, 3).join(', ') + ' +' + (list.length - 3) + ' more';
+  }
+
   /** The page recomputes a row's implied value from its four factors. */
   function impliedOf(row) {
     return Math.round(row[5] * row[8] * row[10] * row[11]);
@@ -134,7 +142,7 @@
       return '<tr data-slug="' + esc(r[1]) + '" data-selected="false" tabindex="0">' +
         '<td class="num">' + r[0] + '</td>' +
         '<td><span class="name"><b>' + esc(r[2]) + '</b>' +
-        '<span class="sub">' + esc(r[1]) + ' · ' + esc(r[3] || 'Uncategorised') + ' · ' + esc((r[4] || []).join(', ') || '—') + '</span></span></td>' +
+        '<span class="sub">' + esc(r[1]) + ' · ' + esc(r[3] || 'Uncategorised') + ' · ' + esc(chainShort(r[4])) + '</span></span></td>' +
         '<td class="num">' + money(r[5]) + '</td>' +
         '<td class="num ' + chgCls + '">' + pct(chg) + '</td>' +
         '<td class="num">' + ageText(r[7]) + '</td>' +
@@ -153,7 +161,7 @@
       var chg = r[6];
       var chgCls = chg === null ? '' : (chg >= 0 ? 'pos' : 'neg');
       return '<tr><td><span class="name"><b>' + esc(r[1]) + '</b>' +
-        '<span class="sub">' + esc(r[0]) + ' · ' + esc(r[2] || 'Uncategorised') + ' · ' + esc((r[3] || []).join(', ') || '—') + '</span></span></td>' +
+        '<span class="sub">' + esc(r[0]) + ' · ' + esc(r[2] || 'Uncategorised') + ' · ' + esc(chainShort(r[3])) + '</span></span></td>' +
         '<td class="num">' + money(r[4]) + '</td>' +
         '<td class="num">' + money(r[5]) + '</td>' +
         '<td class="num ' + chgCls + '">' + pct(chg) + '</td>' +
