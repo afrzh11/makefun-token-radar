@@ -345,7 +345,7 @@ export function buildBoard(snapshot: Snapshot, model: ModelConstants = MODEL): {
       maturity_multiplier: s.maturityMult,
       age_days: s.age,
     },
-    farm_steps: farmSteps(s.p, s.age).map(stepText),
+    farm_steps: farmSteps(s.p, s.age, i + 1).map(stepText),
   }));
   return { board, peers, global };
 }
@@ -492,8 +492,8 @@ export interface FarmStep {
   time: string;
 }
 
-export function farmSteps(p: SnapshotProtocol, age: number | null): FarmStep[] {
-  return Plans.farmSteps(p, age);
+export function farmSteps(p: SnapshotProtocol, age: number | null, rank: number): FarmStep[] {
+  return Plans.farmSteps(p, age, rank);
 }
 
 export function stepText(step: FarmStep): string {
