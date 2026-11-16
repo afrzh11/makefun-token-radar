@@ -226,7 +226,7 @@
     $('detail-peer-note').textContent = note;
 
     var proto = { name: row[2], category: row[3], chains: row[4], tvl_usd: row[5] };
-    var steps = window.Plans.farmSteps(proto, row[7]);
+    var steps = window.Plans.farmSteps(proto, row[7], row[0]);
     $('detail-steps').innerHTML = steps.map(function (s, i) {
       return '<li><b>Step ' + (i + 1) + ' — ' + esc(s.text) + '</b>' +
         '<span class="cost">Cost: ' + esc(s.cost) + ' · Time: ' + esc(s.time) + '</span></li>';
