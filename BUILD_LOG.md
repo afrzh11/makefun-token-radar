@@ -176,3 +176,25 @@ already per-protocol; step 5 is one identical safety warning by design).
 - **Wider board changes** (sorting the peer table, a compact lede to show more rows): the
   peer table is already sorted by multiple; shrinking the lede would change the page's look
   for one extra row. Not done.
+
+## Maximization round 3 (2026-11-16)
+
+Farm plans made per-protocol, model untouched:
+- Gas table (`dashboard/plans.js`) 18 → 59 chains: every first chain on the board now has
+  an honest approximate per-tx range, except Strato (1 row, no figure — keeps the
+  'about $0.50' fallback). Rows on the gas fallback: 96 → 1.
+- Step 1 names the chain ("Use a fresh wallet on Base…"): distinct texts 6 → 51.
+- Step 6 names the protocol and its rank ("…for Steakhouse Financial (rank #1 on this
+  board)…"): distinct texts 1 → 196. `farmSteps(p, age, rank)`; call sites in
+  `lib/model.ts` (board builder) and `dashboard/app.js` (detail view) updated together.
+- Step 3 distinct texts 47 → 71 as a side effect (its cost line now carries chain gas).
+  Step 5 stays identical across rows on purpose: a scam warning should read the same
+  everywhere.
+- Board unchanged (196 rows, total implied $4,136,652,034, top 5 identical); determinism
+  re-verified (two runs identical); data.js vs board.json 0 differences; dossier
+  742,024 bytes, rebuild byte-identical; screenshots re-taken (02-detail 204,032 B,
+  01/03 byte-identical to round 2).
+
+Rejected with numbers: peer-multiple shrinkage for thin categories (api3 2.97× would put
+Steakhouse at ~$2B; rain 400× would put Polymarket at ~$286M / #2) — the 3-peer bar
+stays.
