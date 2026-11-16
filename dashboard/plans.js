@@ -13,7 +13,8 @@
 (function (root) {
   'use strict';
 
-  /** Approximate gas for one ordinary transaction on a chain, in US dollars. */
+  /** Approximate gas for one ordinary transaction on a chain, in US dollars. Chains not
+   *  listed here fall back to 'about $0.50': on this snapshot that is one row (Strato). */
   var GAS = {
     Ethereum: '$4–$8',
     Solana: 'under $0.05',
@@ -24,15 +25,58 @@
     Linea: '$0.05–$0.30',
     Scroll: '$0.05–$0.30',
     ZKsync: '$0.05–$0.30',
+    'zkSync Era': '$0.05–$0.30',
     Mode: '$0.05–$0.30',
     Fraxtal: '$0.05–$0.30',
     Mantle: '$0.05–$0.30',
     'BNB Chain': '$0.10–$0.30',
     BSC: '$0.10–$0.30',
+    Binance: '$0.10–$0.30',
     Polygon: '$0.02–$0.05',
     Avalanche: '$0.10–$0.50',
     Hyperliquid: '$0.05–$0.20',
     HyperEVM: '$0.05–$0.20',
+    'Hyperliquid L1': '$0.05–$0.20',
+    Monad: 'under $0.05',
+    Sui: 'under $0.05',
+    Aptos: 'under $0.05',
+    Stellar: 'under $0.01',
+    Algorand: 'under $0.01',
+    Ripple: 'under $0.01',
+    Tron: '$0.50–$2',
+    Bitcoin: '$0.50–$2',
+    Starknet: '$0.10–$0.50',
+    Stacks: '$0.10–$0.50',
+    Flare: 'under $0.10',
+    Ink: '$0.05–$0.30',
+    Provenance: 'under $0.10',
+    Arc: '$0.05–$0.30',
+    Plasma: 'under $0.10',
+    'Robinhood Chain': '$0.05–$0.30',
+    RISE: '$0.05–$0.30',
+    Bittensor: 'under $0.10',
+    BSquared: '$0.05–$0.30',
+    Pharos: 'under $0.10',
+    Manta: '$0.05–$0.30',
+    Noble: 'under $0.10',
+    'World Chain': '$0.05–$0.30',
+    Mezo: '$0.05–$0.30',
+    Tempo: 'under $0.10',
+    Stable: 'under $0.10',
+    XION: 'under $0.10',
+    RSK: '$0.05–$0.30',
+    Proton: 'under $0.10',
+    Ronin: 'under $0.10',
+    Morph: '$0.05–$0.30',
+    'Reya Network': '$0.05–$0.30',
+    Qubic: 'under $0.10',
+    Klaytn: 'under $0.10',
+    Canton: 'under $0.10',
+    Kava: 'under $0.10',
+    'Bifrost Network': 'under $0.10',
+    Berachain: 'under $0.10',
+    Fluent: 'under $0.10',
+    'Plume Mainnet': 'under $0.10',
   };
 
   function gasFor(chain) {
@@ -204,8 +248,11 @@
     return 'Do one qualifying action each week — a deposit, a borrow, a swap or a vote — so the wallet stays active in the protocol\u2019s own records.';
   }
 
-  /** A protocol's farm plan: six steps, each an action with a cost and a time. */
-  function farmSteps(p, age) {
+  /** A protocol's farm plan: six steps, each an action with a cost and a time. Step 1 names
+   *  the chain the wallet is for; step 6 names the protocol and its rank on the board, so the
+   *  farm log it asks for is this protocol's log, not a generic one. `rank` is the row's rank
+   *  (1..N); the page passes it from the board row, the program from the board builder. */
+  function farmSteps(p, age, rank) {
     var chain = chainOf(p);
     var capital = capitalFor(p);
     var gas = gasFor(chain);
@@ -213,7 +260,7 @@
     var action = actionFor(p, capital, chain);
     return [
       {
-        text: 'Use a fresh wallet that holds only the funds you plan to farm, and keep its seed phrase offline.',
+        text: 'Use a fresh wallet on ' + chain + ' that holds only the funds you plan to farm, and keep its seed phrase offline.',
         cost: gas + ' of gas for the first transaction',
         time: '5 minutes',
       },
@@ -238,7 +285,7 @@
         time: '10 minutes',
       },
       {
-        text: 'Write the wallet, the dates and every transaction in a farm log, so you can repeat the position or unwind it cleanly.',
+        text: 'Write the wallet, the dates and every transaction for ' + p.name + ' (rank #' + rank + ' on this board) in a farm log, so you can repeat the position or unwind it cleanly.',
         cost: 'nothing but the log',
         time: '5 minutes',
       },
